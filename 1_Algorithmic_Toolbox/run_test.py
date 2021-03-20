@@ -1,0 +1,1 @@
+from week3_greedy_algorithms import w3_5_collecting_signatures
