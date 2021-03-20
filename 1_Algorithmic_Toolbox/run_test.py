@@ -1,1 +1,1 @@
-from week3_greedy_algorithms import w3_5_collecting_signatures
+from week3_greedy_algorithms import w3_7_maximum_salary
