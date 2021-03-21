@@ -1,52 +1,41 @@
 import sys
 import pdb
-import logging
-
-
-logger = logging.getLogger(__name__)
-logger.setLevel(logging.DEBUG)
-formatter = logging.Formatter('%(levelname)s:%(message)s')
-stream_handler = logging.StreamHandler()
-stream_handler.setFormatter(formatter)
-if __name__ != '__main':
-    logger.addHandler(stream_handler)
-
 
 def model_good(n, debug=False):
-    logger.debug(f"GOOD MODEL: {n} candies to share")
+    if debug: print(f"GOOD MODEL: {n} candies to share")
     candies_given = [1]
     remaining_candies = n-1
-    logger.debug(f"One candie for the first kid. candies_given: {candies_given}")
+    if debug: print(f"One candie for the first kid. candies_given: {candies_given}")
     while remaining_candies > candies_given[-1]:
         candies_given.append(candies_given[-1]+1)
         remaining_candies -= candies_given[-1]
     if remaining_candies>0:
         candies_given[-1] += remaining_candies
-        logger.debug(f"Assigning reamining candies: {remaining_candies} to the last kid.")
-    logger.debug(f"Final candies distribution: {candies_given[-10:]}.")
-    if __name__ != '__main':
-        return [len(candies_given),candies_given]
+        if debug: print(f"Assigning reamining candies: {remaining_candies} to the last kid.")
+    if debug: print(f"Final candies distribution: {candies_given[-10:]}.")
     return candies_given
 
 
 
 def model_dummy(n, debug=False):
-    logger.debug(f"DUMMY MODEL: {n} candies to share")
+    if debug: print(f"DUMMY MODEL: {n} candies to share")
     candies_given = [1]
-    logger.debug(f"One candie for the first kid. candies_given: {candies_given}")
+    if debug: print(f"One candie for the first kid. candies_given: {candies_given}")
     remaining_candies = n-1
     while remaining_candies > len(candies_given):
-        if n<20: logger.debug(f"There are {remaining_candies} candies left. {len(candies_given)} kids so far, we can add a kid")
+        if n<20: 
+            if debug: print(f"There are {remaining_candies} candies left. {len(candies_given)} kids so far, we can add a kid")
         candies_given.append(0) 
         candies_given = list(map(lambda x : x+1, candies_given))
         remaining_candies -= len(candies_given)
-        if n<20: logger.debug(f"Candies_given array with the new kid added: {candies_given}")
-    logger.debug(f"It is not possible to add any more kids. Current number of kids: {len(candies_given)}. Candies left: {remaining_candies}. Candies given: {candies_given[-10:]}")
+        if n<20: 
+            if debug: print(f"Candies_given array with the new kid added: {candies_given}")
+    if debug: print(f"It is not possible to add any more kids. Current number of kids: {len(candies_given)}. Candies left: {remaining_candies}. Candies given: {candies_given[-10:]}")
     if remaining_candies>0:
-        logger.debug(f"Assigning reamining candies: {remaining_candies} to the first kid.")
+        if debug: print(f"Assigning reamining candies: {remaining_candies} to the first kid.")
         candies_given[0] += remaining_candies
     candies_given = sorted(candies_given)
-    logger.debug(f"Final sorted candies distribution: {candies_given[-10:]}.")
+    if debug: print(f"Final sorted candies distribution: {candies_given[-10:]}.")
     if __name__ != '__main':
         return [len(candies_given),candies_given]
     return candies_given

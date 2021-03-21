@@ -31,7 +31,7 @@ def model_dummy(capacity, weights, values, debug=False):
 
 if __name__ == '__main__':
     d, m, _, *stops = map(int, sys.stdin.read().split())
-    print(compute_min_refills(d, m, stops))
+    print(model_good(d, m, stops))
 
 else:
     import random
