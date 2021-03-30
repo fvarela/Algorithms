@@ -1,1 +1,1 @@
-from week4_divide_and_conquer import w4_2_majority_element
+from week4_divide_and_conquer import w4_3_improving_quicksort
