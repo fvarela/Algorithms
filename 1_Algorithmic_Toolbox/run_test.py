@@ -1,1 +1,1 @@
-from week3_greedy_algorithms import w3_7_maximum_salary
+from week4_divide_and_conquer import w4_2_majority_element
