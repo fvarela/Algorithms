@@ -10,123 +10,75 @@ stream_handler = logging.StreamHandler()
 stream_handler.setFormatter(formatter)
 if __name__ != '__main':
     logger.addHandler(stream_handler)
-
-def partition3(a, l, r, debug=False):
-    #write your code here
-    if debug: print(f"\tPartition3 a:{a}, l:{l}, r:{r}")
-
-    #El pivot está en la posición l.
-    pivot = a[l]
-    if debug: print(f"\tPartition3 pivot:{a[l]}")
-    #Dos índices. less_index y equal_index. En inicio los dos iguales a l
-    less_index = l
-    equal_index = l
-    #Vas recorriendo el array desde el pivot (posición l+1)
-    for index in range(l+1, r+1):
-        if debug: print(f"\t\tPartition3 Inside loop index={index}. Comparing {a[index]} with pivot:{pivot}. a={a}. less_index={less_index}, equal_index={equal_index}")
-    #Si el número es menor a pivot aumentas less_index y equal_index
-
-        if a[index] < pivot:
-            less_index += 1
-            equal_index +=1
-            if debug: print(f"\t\tPartition3 Inside loop {a[index]} LESS THAN pivot={pivot}. less_index={less_index}, equal_index={equal_index}")
-            if less_index == equal_index:
-        #Intercambias ese número por el que esté en less_index
-                if debug: print(f"\t\tPartition3 Inside loop {a[index]}. Less index is the same as equal_index")
-                a[index], a[less_index] = a[less_index], a[index]
-            else:
-                if debug: print(f"\t\tPartition3 Inside loop {a[index]}. equal_index is greater. Swapping positions index:{index} and equal_index:{equal_index} first. Before: {a}")
-                a[index], a[equal_index] = a[equal_index], a[index]
-                if debug: print(f"\t\tPartition3 Inside loop {a[index]}. After: {a}")
-                if debug: print(f"\t\tPartition3 Inside loop {a[index]}. Swapping now less_index: {less_index} with equal_index: {equal_index}.")
-                a[less_index], a[equal_index] = a[equal_index], a[less_index]
-                if debug: print(f"\t\tPartition3 Inside loop {a[index]}. After: {a}")
-            if debug: print(f"\t\tPartition3 Inside loop after switching positions: a={a}")
-
-        #Si el número es menor a pivot aumentas equal_index
-        elif a[index] == pivot:
-            
-            equal_index += 1
-            if debug: print(f"\t\tPartition3 Inside {a[index]} EQUAL TO pivot={pivot}. less_index={less_index}, equal_index={equal_index}")
-            a[index], a[equal_index] = a[equal_index], a[index]
-            if debug: print(f"\t\tPartition3 Inside loop after switching positions: a={a}")
-        else:
-            if debug: print(f"\t\tPartition3 Inside loop {a[index]} is GREATER THAN pivot: {pivot}")
-            #Intercambias ese número por el que esté en equal_index
-        if debug: print("")
-    if debug: print(f"\tPartition3. before swapping indexes l:{l} with less_index:{less_index} a={a}")
-    a[less_index], a[l] = a[l], a[less_index]
-    if debug: print(f"\tPartition3. after swapping indexes l:{l} with less_index:{less_index} a={a}")
-    if debug: print(f"\tPartition3. Returning less_index={less_index} and equal_index={equal_index}. a={a}")
-    return (less_index, equal_index)
-    
-
-def model_good(a, l, r, debug=False):
-    if debug: print(f"Model good. a={a}. l={l}, r={r}")
-    if l >= r:
-        if debug: print(f"Left is equal or greater than r. Exiting. l={l}, r={r}")
-        return
-    k = random.randint(l, r)
-    if debug: print(f"random index k. k={k}. a[k]={a[k]}")
-    a[l], a[k] = a[k], a[l]
-    if debug: print(f"a with k in the first position: a={a}.")
-    #use partition3
-    m1, m2 = partition3(a, l, r, debug=debug)
-    model_good(a, l, m1 - 1, debug = debug)
-    model_good(a, m2 + 1, r, debug = debug)
-    if debug: print(f"Model good. OUTPUT a={a}.")
-    
-
-def partition2(a, l, r, debug=False):
-    if debug: print(f"Partition2 a:{a}, l:{l}, r:{r}")
-    #El pivot está en la posición l. Con esto vas recorriendo todo el array 
-    #y si el número es menor te lo llevas a la izquierda
-    
-    #x es el pivot
-    #j es el primer numero mayor que el pivot
-    x = a[l]
-    j = l
-    if debug: print(f"j vale{j}. x vale {x}")
-
-    for i in range(l + 1, r + 1):
-        if debug: print(f"Comparando a[i]: {a[i]} con x: {x}")
-        if a[i] <= x:
-            j += 1
-            if debug: print(f"a[i] es menor o igual. j vale {j}")
-            #Los intercambias
-            if debug: print(f"Antes del intercambio posiciones {i} con {j} es decir, {a[i]} con {a[j]}: {a}")
-            a[i], a[j] = a[j], a[i]
-            if debug: print(f"Después del intercambio: {a}")
-    if debug: print(f"a antes de la última línea en la que se cambian los índices {l} por {j}: {a}")
-    a[l], a[j] = a[j], a[l]
-    if debug: print(f"a después: {a}. Valor que se devolverá: {j}")
-    return j
-
-def model_dummy(a, l, r, debug=False):
    
-    #Si el valor de la izquierda es igual o superior al de la derecha no haces nada
-    if l >= r:
-        return
-    #Si el valor de la derecha es superior:
-    #Coges el pivot. Un valor al azar
-    k = random.randint(l, r)
+
+def model_good(a, b, left, right, debug=False):
+    if debug: print(f"\nModel good: a:{a}, b:{b}, left:{left}, right:{right}")
+    number_of_inversions = 0
+    if right - left <= 1:
+        return number_of_inversions
+    ave = (left + right) // 2
+    number_of_inversions += model_good(a, b, left, ave, debug=debug)
+    number_of_inversions += model_good(a, b, ave, right, debug=debug)
     
-    if debug: print(f"a before moving the pivot {a[k]}: {a}")
-    #Mueves el pivot al principio del array para que no moleste
-    a[l], a[k] = a[k], a[l]
-    if debug: print(f"a after moving pivot: {a}")
-    #use partition3
-    m = partition2(a, l, r, debug=False)
-    if debug: print(f"a after partition {a}. m: {m}")
-    model_dummy(a, l, m - 1)
-    model_dummy(a, m + 1, r)
+    if debug: print(f"After recursions. left:{left}, right:{right}")
+    #write your code here
+    
+    middle_index = (left + right)//2
+    left_array = a[left:middle_index]
+    right_array = a[middle_index:right]
+    i=j=0
+    k=left
+    if debug: print(f"\tleft_array:{left_array}. right_array:{right_array}. Iterating on left array elements")
+    for i in range(0, len(left_array)):
+        if debug: print(f"\t\tFirst loop. indexes: i:{i}, j{j}, k:{k}. Array a:{a}")
+        for w in range(0,len(right_array)):
+            if right_array[w]<left_array[i]:
+                if debug: print(f"\t\tNEW INVERSION right_array value at index {w} is {right_array[w]}, less than left array at index {i}: {left_array[i]}")
+                number_of_inversions += 1
+
+        if j < len(right_array):
+            # print(f"Accediendo a right_array: {right_array} con índice {j}")
+            while right_array[j]<left_array[i]:
+                if debug: print(f"\t\tRight array value index j:{j} -> {right_array[j]} is less than left array value index i:{i} -> {left_array[i]}")
+                a[k] = right_array[j]
+                j+=1
+                k+=1
+                if j == len(right_array):
+                    break
+        a[k] = left_array[i]
+        i+=1
+        k+=1
+    if debug: print(f"\ta after main loop {a}")
+    while j!=len(right_array):
+        if debug: print(f"\t\tSecond loop. Adding remaining element right_array[j]: {right_array[j]} from right_array to a at position k:{k}")
+        a[k] = right_array[j]
+        j+=1
+        k+=1
+    # b= [a[i] for i in range(0, len(a)) if a[i]!=0]
+    if debug: print(f"\ta after secondary loop: {a}")
+    if debug: print(f"\tReturning inversions_in_this_iteration: {number_of_inversions}")
+    return number_of_inversions
+
+def model_dummy(a, b, left, right, debug=False):
+    print(f"Model dummy: a:{a}, b:{b}, left:{left}, right:{right}")
+    number_of_inversions = 0
+    if right - left <= 1:
+        return number_of_inversions
+    ave = (left + right) // 2
+    number_of_inversions += model_dummy(a, b, left, ave)
+    number_of_inversions += model_dummy(a, b, ave, right)
+    #write your code here
+    pdb.set_trace()
+    return number_of_inversions
+
 
 if __name__ == '__main__':
     input = sys.stdin.read()
     n, *a = list(map(int, input.split()))
-    model_good(a, 0, n - 1)
-    for x in a:
-        print(x, end=' ')
+    b = n * [0]
+    print(f"Parameters: n:{n}, a:{a}, b:{b}")
+    print(model_good(a, b, 0, len(a)))
 
 else:
     import random
@@ -141,11 +93,11 @@ else:
         model_start = time.time()
         model_output=[]
         _input = model_input[0].copy()
-        model_output.append(model(a=_input,l=0,r=len(_input)-1,debug=DEBUG))
+        model_output.append(model(a=_input,b=len(_input)*[0],left=0,right=len(_input), debug=DEBUG))
         total_time = round(time.time() - model_start,2)
         if type(model_output) is float:
             model_output = round(model_output, decimal_preccision)
-        return (_input, total_time)
+        return (model_output, total_time)
 
     def check_values(first_value, second_value):
         if type(first_value) is float:
@@ -261,16 +213,28 @@ else:
 
     SAMPLE = True
     BOUNDARY = False
-    STRESS = True
+    STRESS = False
 
     RANDOM_INPUT=True
     PROMPT_USER = True
     PROMP_ON_ERRORS = True
     number_of_tests = 500
 
-    sample_input_1=[[2,3,9,2,2]]
-    sample_output_1 = [2,2,2,3,9]
+    sample_input_1=[[3,1,5,7,2,3]]
+    sample_output_1 = [6]
     sample_1_text = ''
+    sample_input_2=[[1,2]]
+    sample_output_2 = [0]
+    sample_2_text = ''
+    sample_input_3=[[2,1,1]]
+    sample_output_3 = [2]
+    sample_3_text = ''
+    sample_input_4=[[3,1,5,7,2,3,5]]
+    sample_output_4 = [7]
+    sample_4_text = ''
+    sample_input_4=[[8,1,4,9,2,5,3,7,4,6]]
+    sample_output_4 = [20]
+    sample_4_text = ''
 
 
     stress_tests_boundary = [1000,500]
@@ -278,13 +242,12 @@ else:
     # 10 valor máximo (el mínimo es 0)
     decimal_preccision = 4
 
-    print(f"\n{Style.BRIGHT}Improving Quicksort Algorithm.{Style.RESET_ALL}\n")
+    print(f"\n{Style.BRIGHT}Number of Inversions Algorithm.{Style.RESET_ALL}\n")
     choices = []
     if SAMPLE: choices.append('s')
     if BOUNDARY: choices.append('b')
     if STRESS: choices.append('t')
-    if len(choices) >1: 
-        choices.append('a')
+    choices.append('a')
     choices.append('x')
     while True:
         choice = None
@@ -300,7 +263,9 @@ else:
             
         if choice == 's':
             good_model_test(_input=[sample_input_1], test_name="Sample", known_result=sample_output_1)
-
+            good_model_test(_input=[sample_input_2], test_name="Sample", known_result=sample_output_2)
+            good_model_test(_input=[sample_input_3], test_name="Sample", known_result=sample_output_3)
+            good_model_test(_input=[sample_input_4], test_name="Sample", known_result=sample_output_4)
         elif choice == 'b':
             good_model_test(_input=[[1]], test_name="Boundary")
             good_model_test(_input=[[1e3]], test_name="Boundary")
@@ -308,7 +273,11 @@ else:
             stress_tests(number_of_tests=number_of_tests, values=stress_tests_boundary)
         elif choice == 'a':
             PROMPT_USER = False
-            if SAMPLE: good_model_test(_input=[sample_input_1], test_name="Sample", known_result=sample_output_1)
+            if SAMPLE: 
+                good_model_test(_input=[sample_input_1], test_name="Sample", known_result=sample_output_1)
+                good_model_test(_input=[sample_input_2], test_name="Sample", known_result=sample_output_2)
+                good_model_test(_input=[sample_input_3], test_name="Sample", known_result=sample_output_3)
+                good_model_test(_input=[sample_input_4], test_name="Sample", known_result=sample_output_4)
             if BOUNDARY: 
                 good_model_test(_input=[[1]], test_name="Boundary")
                 good_model_test(_input=[[1e3]], test_name="Boundary")
