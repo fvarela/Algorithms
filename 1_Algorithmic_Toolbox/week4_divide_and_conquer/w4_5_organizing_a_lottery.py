@@ -10,122 +10,50 @@ stream_handler = logging.StreamHandler()
 stream_handler.setFormatter(formatter)
 if __name__ != '__main':
     logger.addHandler(stream_handler)
-
-def partition3(a, l, r, debug=False):
-    #write your code here
-    if debug: print(f"\tPartition3 a:{a}, l:{l}, r:{r}")
-
-    #El pivot está en la posición l.
-    pivot = a[l]
-    if debug: print(f"\tPartition3 pivot:{a[l]}")
-    #Dos índices. less_index y equal_index. En inicio los dos iguales a l
-    less_index = l
-    equal_index = l
-    #Vas recorriendo el array desde el pivot (posición l+1)
-    for index in range(l+1, r+1):
-        if debug: print(f"\t\tPartition3 Inside loop index={index}. Comparing {a[index]} with pivot:{pivot}. a={a}. less_index={less_index}, equal_index={equal_index}")
-    #Si el número es menor a pivot aumentas less_index y equal_index
-
-        if a[index] < pivot:
-            less_index += 1
-            equal_index +=1
-            if debug: print(f"\t\tPartition3 Inside loop {a[index]} LESS THAN pivot={pivot}. less_index={less_index}, equal_index={equal_index}")
-            if less_index == equal_index:
-        #Intercambias ese número por el que esté en less_index
-                if debug: print(f"\t\tPartition3 Inside loop {a[index]}. Less index is the same as equal_index")
-                a[index], a[less_index] = a[less_index], a[index]
-            else:
-                if debug: print(f"\t\tPartition3 Inside loop {a[index]}. equal_index is greater. Swapping positions index:{index} and equal_index:{equal_index} first. Before: {a}")
-                a[index], a[equal_index] = a[equal_index], a[index]
-                if debug: print(f"\t\tPartition3 Inside loop {a[index]}. After: {a}")
-                if debug: print(f"\t\tPartition3 Inside loop {a[index]}. Swapping now less_index: {less_index} with equal_index: {equal_index}.")
-                a[less_index], a[equal_index] = a[equal_index], a[less_index]
-                if debug: print(f"\t\tPartition3 Inside loop {a[index]}. After: {a}")
-            if debug: print(f"\t\tPartition3 Inside loop after switching positions: a={a}")
-
-        #Si el número es menor a pivot aumentas equal_index
-        elif a[index] == pivot:
-            
-            equal_index += 1
-            if debug: print(f"\t\tPartition3 Inside {a[index]} EQUAL TO pivot={pivot}. less_index={less_index}, equal_index={equal_index}")
-            a[index], a[equal_index] = a[equal_index], a[index]
-            if debug: print(f"\t\tPartition3 Inside loop after switching positions: a={a}")
-        else:
-            if debug: print(f"\t\tPartition3 Inside loop {a[index]} is GREATER THAN pivot: {pivot}")
-            #Intercambias ese número por el que esté en equal_index
-        if debug: print("")
-    if debug: print(f"\tPartition3. before swapping indexes l:{l} with less_index:{less_index} a={a}")
-    a[less_index], a[l] = a[l], a[less_index]
-    if debug: print(f"\tPartition3. after swapping indexes l:{l} with less_index:{less_index} a={a}")
-    if debug: print(f"\tPartition3. Returning less_index={less_index} and equal_index={equal_index}. a={a}")
-    return (less_index, equal_index)
-    
-
-def model_good(a, l, r, debug=False):
-    if debug: print(f"Model good. a={a}. l={l}, r={r}")
-    if l >= r:
-        if debug: print(f"Left is equal or greater than r. Exiting. l={l}, r={r}")
-        return
-    k = random.randint(l, r)
-    if debug: print(f"random index k. k={k}. a[k]={a[k]}")
-    a[l], a[k] = a[k], a[l]
-    if debug: print(f"a with k in the first position: a={a}.")
-    #use partition3
-    m1, m2 = partition3(a, l, r, debug=debug)
-    model_good(a, l, m1 - 1, debug = debug)
-    model_good(a, m2 + 1, r, debug = debug)
-    if debug: print(f"Model good. OUTPUT a={a}.")
-    
-
-def partition2(a, l, r, debug=False):
-    if debug: print(f"Partition2 a:{a}, l:{l}, r:{r}")
-    #El pivot está en la posición l. Con esto vas recorriendo todo el array 
-    #y si el número es menor te lo llevas a la izquierda
-    
-    #x es el pivot
-    #j es el primer numero mayor que el pivot
-    x = a[l]
-    j = l
-    if debug: print(f"j vale{j}. x vale {x}")
-
-    for i in range(l + 1, r + 1):
-        if debug: print(f"Comparando a[i]: {a[i]} con x: {x}")
-        if a[i] <= x:
-            j += 1
-            if debug: print(f"a[i] es menor o igual. j vale {j}")
-            #Los intercambias
-            if debug: print(f"Antes del intercambio posiciones {i} con {j} es decir, {a[i]} con {a[j]}: {a}")
-            a[i], a[j] = a[j], a[i]
-            if debug: print(f"Después del intercambio: {a}")
-    if debug: print(f"a antes de la última línea en la que se cambian los índices {l} por {j}: {a}")
-    a[l], a[j] = a[j], a[l]
-    if debug: print(f"a después: {a}. Valor que se devolverá: {j}")
-    return j
-
-def model_dummy(a, l, r, debug=False):
    
-    #Si el valor de la izquierda es igual o superior al de la derecha no haces nada
-    if l >= r:
-        return
-    #Si el valor de la derecha es superior:
-    #Coges el pivot. Un valor al azar
-    k = random.randint(l, r)
-    
-    if debug: print(f"a before moving the pivot {a[k]}: {a}")
-    #Mueves el pivot al principio del array para que no moleste
-    a[l], a[k] = a[k], a[l]
-    if debug: print(f"a after moving pivot: {a}")
-    #use partition3
-    m = partition2(a, l, r, debug=False)
-    if debug: print(f"a after partition {a}. m: {m}")
-    model_dummy(a, l, m - 1)
-    model_dummy(a, m + 1, r)
+
+def model_good(starts, ends, points, debug=False):
+    cnt = [0] * len(points)
+    all_elements=[[x,'l'] for x in starts]
+    [all_elements.append([x,'p']) for x in points]
+    [all_elements.append([x,'r']) for x in ends]
+    def sort_all_elements(left,right):
+        if debug: print("Base case length of array==1")
+        if left+1>=right:
+            return left
+        #Calculas el punto medio y haces una llamada recursiva
+        half = (left+right)//2
+        sort_all_elements(left,half)
+        sort_all_elements(half,right)
+        #Aquí los subarrays deberían llegar ordenados.
+    sort_all_elements(0, len(all_elements))
+    #write your code here
+    return cnt
+
+
+def model_dummy(starts, ends, points, debug=False):
+    if debug: print(f"Model dummy input: starts:{starts} ends:{ends} points:{points}")
+    cnt = [0] * len(points)
+    for i in range(len(points)):
+        for j in range(len(starts)):
+            if starts[j] <= points[i] <= ends[j]:
+                cnt[i] += 1
+    return cnt
+
 
 if __name__ == '__main__':
     input = sys.stdin.read()
-    n, *a = list(map(int, input.split()))
-    model_good(a, 0, n - 1)
-    for x in a:
+    data = list(map(int, input.split()))
+    n = data[0] #number of segments
+    m = data[1] #number of points
+    print(f"This is n: {n}. This is m:{m}.")
+    print(f"This is data: {data}")
+    starts = data[2:2 * n + 2:2]
+    ends   = data[3:2 * n + 2:2]
+    points = data[2 * n + 2:]
+    #use fast_count_segments
+    cnt = model_dummy(starts, ends, points)
+    for x in cnt:
         print(x, end=' ')
 
 else:
@@ -137,15 +65,22 @@ else:
     from colorama import Fore, Style, Back
     colorama.init()
 
-    def test_model(model, model_input):
+    def test_model(model, data):
+
+        # Model dummy input: starts:[0, 7] ends:[5, 10] points:[1, 6, 11]
+
         model_start = time.time()
         model_output=[]
-        _input = model_input[0].copy()
-        model_output.append(model(a=_input,l=0,r=len(_input)-1,debug=DEBUG))
+        n = data[0]
+
+        starts = data[2:2 * n + 2:2]
+        ends   = data[3:2 * n + 2:2]
+        points = data[2 * n + 2:]
+        model_output = model(starts, ends, points, debug=DEBUG)
         total_time = round(time.time() - model_start,2)
         if type(model_output) is float:
             model_output = round(model_output, decimal_preccision)
-        return (_input, total_time)
+        return (model_output, total_time)
 
     def check_values(first_value, second_value):
         if type(first_value) is float:
@@ -206,23 +141,22 @@ else:
                     continue
                 elif choice=='y':
                     break
-    def good_model_test(_input, test_name, known_result=False):
+    def good_model_test(_input, test_name, test_number=0, known_result=False):
         do_the_test = test_presentation_and_prompt_user(test_name=test_name, additional_info= f"Input list: {_input}.")
         if do_the_test:
-            for i, value in enumerate(_input):
-                (good_output, good_time) = test_model(model_good if not ONLY_DUMMY else model_dummy, value.copy())
-                result = None
-                matches = True
-                if known_result is not False:
-                    (matches,result) = check_values(good_output, known_result)
-                else:
-                    result = 'Unknown'
-                table_data=[["Test #", "Input", "Model", "Output", "Time", "Result"],
-                            [i,value, model_good.__name__, good_output , good_time, result]]
-                print_table(table_data, end=True)
-                if not matches:
-                    pdb.set_trace()
-                    wait_for_input_after_error()
+            (good_output, good_time) = test_model(model_good if not ONLY_DUMMY else model_dummy, _input)
+            result = None
+            matches = True
+            if known_result is not False:
+                (matches,result) = check_values(good_output, known_result)
+            else:
+                result = 'Unknown'
+            table_data=[["Test #", "Input", "Model", "Output", "Time", "Result"],
+                        [test_number,_input, model_good.__name__ if not ONLY_DUMMY else model_dummy.__name__, good_output , good_time, result]]
+            print_table(table_data, end=True)
+            if not matches:
+                pdb.set_trace()
+                wait_for_input_after_error()
             wait_for_input()
     def stress_tests(number_of_tests, values):
         global PROMP_ON_ERRORS
@@ -261,16 +195,22 @@ else:
 
     SAMPLE = True
     BOUNDARY = False
-    STRESS = True
+    STRESS = False
 
     RANDOM_INPUT=True
     PROMPT_USER = True
     PROMP_ON_ERRORS = True
     number_of_tests = 500
 
-    sample_input_1=[[2,3,9,2,2]]
-    sample_output_1 = [2,2,2,3,9]
+    sample_input_1=[2,3,0,5,7,10,1,6,11]
+    sample_output_1 = [1,0,0]
     sample_1_text = ''
+    sample_input_2=[1,3,-10,10,-100,100,0]
+    sample_output_2 = [0,0,1]
+    sample_2_text = ''
+    sample_input_3=[3,2,0,5,-3,2,7,10,1,6]
+    sample_output_3 = [2,0]
+    sample_3_text = ''
 
 
     stress_tests_boundary = [1000,500]
@@ -278,13 +218,12 @@ else:
     # 10 valor máximo (el mínimo es 0)
     decimal_preccision = 4
 
-    print(f"\n{Style.BRIGHT}Improving Quicksort Algorithm.{Style.RESET_ALL}\n")
+    print(f"\n{Style.BRIGHT}Number of Inversions Algorithm.{Style.RESET_ALL}\n")
     choices = []
     if SAMPLE: choices.append('s')
     if BOUNDARY: choices.append('b')
     if STRESS: choices.append('t')
-    if len(choices) >1: 
-        choices.append('a')
+    choices.append('a')
     choices.append('x')
     while True:
         choice = None
@@ -299,8 +238,9 @@ else:
             print()
             
         if choice == 's':
-            good_model_test(_input=[sample_input_1], test_name="Sample", known_result=sample_output_1)
-
+            good_model_test(_input=sample_input_1, test_name="Sample", test_number=1, known_result=sample_output_1)
+            good_model_test(_input=sample_input_2, test_name="Sample", test_number=2, known_result=sample_output_2)
+            good_model_test(_input=sample_input_3, test_name="Sample", test_number=3, known_result=sample_output_3)
         elif choice == 'b':
             good_model_test(_input=[[1]], test_name="Boundary")
             good_model_test(_input=[[1e3]], test_name="Boundary")
@@ -308,7 +248,10 @@ else:
             stress_tests(number_of_tests=number_of_tests, values=stress_tests_boundary)
         elif choice == 'a':
             PROMPT_USER = False
-            if SAMPLE: good_model_test(_input=[sample_input_1], test_name="Sample", known_result=sample_output_1)
+            if SAMPLE: 
+                good_model_test(_input=sample_input_1, test_name="Sample", test_number=1, known_result=sample_output_1)
+                good_model_test(_input=sample_input_2, test_name="Sample", test_number=2, known_result=sample_output_2)
+                good_model_test(_input=sample_input_3, test_name="Sample", test_number=3, known_result=sample_output_3)
             if BOUNDARY: 
                 good_model_test(_input=[[1]], test_name="Boundary")
                 good_model_test(_input=[[1e3]], test_name="Boundary")
