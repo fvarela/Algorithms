@@ -13,21 +13,80 @@ if __name__ != '__main':
    
 
 def model_good(starts, ends, points, debug=False):
+    if debug: print(f"model_good. starts:{starts} ends:{ends} points:{points} ")
     cnt = [0] * len(points)
     all_elements=[[x,'l'] for x in starts]
     [all_elements.append([x,'p']) for x in points]
     [all_elements.append([x,'r']) for x in ends]
-    def sort_all_elements(left,right):
-        if debug: print("Base case length of array==1")
+    sorted_array=[]
+    if debug: print(f"all_elements: {all_elements}")
+
+    def merge_elements(array1, array2):
+   
+        if debug: print(f"\tMerge elements array1:{array1} array2:{array2}")
+        temp_array=[]
+        i=j=0
+        for i in range(len(array1)):
+            if j<len(array2):
+                if debug: print(f"array2[j] {array2[j]}, array1[i]:{array1[i]}")
+                while array2[j][0]<=array1[i][0]:
+                    if array2[j][0]<array1[i][0]:
+                        temp_array.append(array2[j])
+                        j+=1
+                    elif array2[j][0]==array1[i][0]:
+                        if array1[i][1] == 'l':
+                            temp_array.append(array1[i])
+                            temp_array.append(array2[j])
+                            j+=1
+                        elif array2[j][1] == 'l':
+                            temp_array.append(array2[j])
+                            temp_array.append(array1[i])
+                            j+=1
+                           
+                        elif array1[j][1] == 'p':
+                            temp_array.append(array1[i])
+                            temp_array.append(array2[j])
+                            j+=1
+                                          
+                        elif array2[j][1] == 'p':
+                            temp_array.append(array2[j])
+                            temp_array.append(array1[i])
+                            j+=1
+                          
+                        else:
+                            temp_array.append(array2[j])
+                            temp_array.append(array1[i])
+                            j+=1
+                    if j >= len(array2):
+                        break            
+            temp_array.append(array1[i])
+        while j<len(array2):
+            temp_array.append(array2[j])
+            j+=1
+        if debug: print(f"Sorted array: {temp_array}")
+        return temp_array
+
+    def sort_elements(left,right):
+        if debug: print(f"\tsort_all_elements left:{left}, right:{right}.")
         if left+1>=right:
-            return left
-        #Calculas el punto medio y haces una llamada recursiva
+            #if debug: print(f"\tBase case length of array==1")
+            return [all_elements[left]]
         half = (left+right)//2
-        sort_all_elements(left,half)
-        sort_all_elements(half,right)
-        #Aquí los subarrays deberían llegar ordenados.
-    sort_all_elements(0, len(all_elements))
-    #write your code here
+        
+        array1=sort_elements(left,half)
+        array2=sort_elements(half,right)
+        return merge_elements(array1, array2)
+        
+
+    sorted_array=sort_elements(0, len(all_elements))
+    cnt = [] * len(points)
+    open_intervals = 0
+    for array in sorted_array:
+        if array[1]=='l': open_intervals+=1
+        if array[1]=='r': open_intervals-=1
+        if array[1]=='p': 
+            _index = points.index(array[0])
+            cnt.insert(_index,open_intervals)
     return cnt
 
 
@@ -46,8 +105,6 @@ if __name__ == '__main__':
     data = list(map(int, input.split()))
     n = data[0] #number of segments
     m = data[1] #number of points
-    print(f"This is n: {n}. This is m:{m}.")
-    print(f"This is data: {data}")
     starts = data[2:2 * n + 2:2]
     ends   = data[3:2 * n + 2:2]
     points = data[2 * n + 2:]
@@ -189,7 +246,7 @@ else:
                     wait_for_input_after_error()
             PROMP_ON_ERRORS = True
             wait_for_input()     
-    DEBUG = True
+    DEBUG = False
 
     ONLY_DUMMY = False
 

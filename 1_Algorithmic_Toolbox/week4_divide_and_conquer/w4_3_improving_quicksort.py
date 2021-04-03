@@ -255,7 +255,7 @@ else:
                     wait_for_input_after_error()
             PROMP_ON_ERRORS = True
             wait_for_input()     
-    DEBUG = True
+    DEBUG = False
 
     ONLY_DUMMY = False
 
