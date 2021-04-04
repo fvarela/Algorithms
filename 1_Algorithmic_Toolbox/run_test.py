@@ -1,1 +1,1 @@
-from week4_divide_and_conquer import w4_5_organizing_a_lottery
+from week4_divide_and_conquer import w4_6_closest_points

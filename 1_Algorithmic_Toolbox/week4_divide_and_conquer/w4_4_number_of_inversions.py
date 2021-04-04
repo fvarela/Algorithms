@@ -77,7 +77,7 @@ if __name__ == '__main__':
     input = sys.stdin.read()
     n, *a = list(map(int, input.split()))
     b = n * [0]
-    print(f"Parameters: n:{n}, a:{a}, b:{b}")
+    #print(f"Parameters: n:{n}, a:{a}, b:{b}")
     print(model_good(a, b, 0, len(a)))
 
 else:
