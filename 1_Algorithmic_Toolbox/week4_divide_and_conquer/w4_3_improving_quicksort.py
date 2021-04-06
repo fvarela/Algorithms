@@ -18,20 +18,14 @@ def partition3(a, l, r, debug=False):
     #El pivot está en la posición l.
     pivot = a[l]
     if debug: print(f"\tPartition3 pivot:{a[l]}")
-    #Dos índices. less_index y equal_index. En inicio los dos iguales a l
     less_index = l
     equal_index = l
-    #Vas recorriendo el array desde el pivot (posición l+1)
     for index in range(l+1, r+1):
-        if debug: print(f"\t\tPartition3 Inside loop index={index}. Comparing {a[index]} with pivot:{pivot}. a={a}. less_index={less_index}, equal_index={equal_index}")
-    #Si el número es menor a pivot aumentas less_index y equal_index
-
         if a[index] < pivot:
             less_index += 1
             equal_index +=1
             if debug: print(f"\t\tPartition3 Inside loop {a[index]} LESS THAN pivot={pivot}. less_index={less_index}, equal_index={equal_index}")
             if less_index == equal_index:
-        #Intercambias ese número por el que esté en less_index
                 if debug: print(f"\t\tPartition3 Inside loop {a[index]}. Less index is the same as equal_index")
                 a[index], a[less_index] = a[less_index], a[index]
             else:
@@ -42,17 +36,13 @@ def partition3(a, l, r, debug=False):
                 a[less_index], a[equal_index] = a[equal_index], a[less_index]
                 if debug: print(f"\t\tPartition3 Inside loop {a[index]}. After: {a}")
             if debug: print(f"\t\tPartition3 Inside loop after switching positions: a={a}")
-
-        #Si el número es menor a pivot aumentas equal_index
         elif a[index] == pivot:
-            
             equal_index += 1
             if debug: print(f"\t\tPartition3 Inside {a[index]} EQUAL TO pivot={pivot}. less_index={less_index}, equal_index={equal_index}")
             a[index], a[equal_index] = a[equal_index], a[index]
             if debug: print(f"\t\tPartition3 Inside loop after switching positions: a={a}")
         else:
             if debug: print(f"\t\tPartition3 Inside loop {a[index]} is GREATER THAN pivot: {pivot}")
-            #Intercambias ese número por el que esté en equal_index
         if debug: print("")
     if debug: print(f"\tPartition3. before swapping indexes l:{l} with less_index:{less_index} a={a}")
     a[less_index], a[l] = a[l], a[less_index]

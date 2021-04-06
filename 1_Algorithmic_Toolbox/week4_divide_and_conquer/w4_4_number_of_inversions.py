@@ -15,6 +15,49 @@ if __name__ != '__main':
 def model_good(a, b, left, right, debug=False):
     if debug: print(f"\nModel good: a:{a}, b:{b}, left:{left}, right:{right}")
     number_of_inversions = 0
+    #Base case, only one element, return number of inversions
+    if right - left <= 1:
+        return number_of_inversions
+    ave = (left + right) // 2
+    number_of_inversions += model_good(a, b, left, ave, debug=debug)
+    number_of_inversions += model_good(a, b, ave, right, debug=debug)
+    
+    if debug: print(f"After recursions. left:{left}, right:{right}")
+    #write your code here
+    
+    middle_index = (left + right)//2
+    left_array = a[left:middle_index]
+    right_array = a[middle_index:right]
+
+    k=left
+    if debug: print(f"\tleft_array:{left_array}. right_array:{right_array}. Iterating on left array elements")
+    for i in range(0,len(right_array) + len(left_array)):
+        get_from_left=False
+        get_from_right=False
+        if len(right_array)==0:
+            get_from_left=True
+        elif len(left_array)==0:
+            get_from_right=True
+        elif left_array[0]<=right_array[0]:
+            get_from_left=True
+        else:
+            get_from_right=True
+        if get_from_left:
+            a[k] = left_array.pop(0)
+            k+=1
+        elif get_from_right:
+            a[k] = right_array.pop(0)
+            number_of_inversions+=len(left_array)
+            k+=1
+
+    if debug: print(f"\ta after secondary loop: {a}")
+    if debug: print(f"\tReturning inversions_in_this_iteration: {number_of_inversions}")
+    return number_of_inversions
+
+def model_dummy(a, b, left, right, debug=False):
+    if debug: print(f"\nModel good: a:{a}, b:{b}, left:{left}, right:{right}")
+    number_of_inversions = 0
+    #Base case, only one element, return number of inversions
     if right - left <= 1:
         return number_of_inversions
     ave = (left + right) // 2
@@ -58,18 +101,6 @@ def model_good(a, b, left, right, debug=False):
     # b= [a[i] for i in range(0, len(a)) if a[i]!=0]
     if debug: print(f"\ta after secondary loop: {a}")
     if debug: print(f"\tReturning inversions_in_this_iteration: {number_of_inversions}")
-    return number_of_inversions
-
-def model_dummy(a, b, left, right, debug=False):
-    print(f"Model dummy: a:{a}, b:{b}, left:{left}, right:{right}")
-    number_of_inversions = 0
-    if right - left <= 1:
-        return number_of_inversions
-    ave = (left + right) // 2
-    number_of_inversions += model_dummy(a, b, left, ave)
-    number_of_inversions += model_dummy(a, b, ave, right)
-    #write your code here
-    pdb.set_trace()
     return number_of_inversions
 
 

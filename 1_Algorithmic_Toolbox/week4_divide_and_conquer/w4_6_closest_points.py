@@ -12,83 +12,110 @@ if __name__ != '__main':
     logger.addHandler(stream_handler)
    
 
-def model_dummy(starts, ends, points, debug=False):
-    pass
+def model_good(starts, ends, points, debug=False):
+    if debug: print(f"model_good. starts:{starts} ends:{ends} points:{points} ")
+    cnt = [0] * len(points)
+    all_elements=[[x,'l'] for x in starts]
+    [all_elements.append([x,'p']) for x in points]
+    [all_elements.append([x,'r']) for x in ends]
+    sorted_array=[]
+    if debug: print(f"all_elements: {all_elements}")
 
-def model_good(x,y, debug=False):
-    def get_distance(x0,x1,y0,y1):
-        return ((x0-x1)**2+(y0-y1)**2)**0.5
+    def merge_elements(array1, array2):
+   
+        if debug: print(f"\tMerge elements array1:{array1} array2:{array2}")
+        temp_array=[]
+        i=j=0
+        for i in range(len(array1)):
+            if j<len(array2):
+                if debug: print(f"array2[j] {array2[j]}, array1[i]:{array1[i]}")
+                while array2[j][0]<=array1[i][0]:
+                    if array2[j][0]<array1[i][0]:
+                        temp_array.append(array2[j])
+                        j+=1
+                    elif array2[j][0]==array1[i][0]:
+                        if array1[i][1] == 'l':
+                            temp_array.append(array1[i])
+                            temp_array.append(array2[j])
+                            j+=1
+                        elif array2[j][1] == 'l':
+                            temp_array.append(array2[j])
+                            temp_array.append(array1[i])
+                            j+=1
+                           
+                        elif array1[j][1] == 'p':
+                            temp_array.append(array1[i])
+                            temp_array.append(array2[j])
+                            j+=1
+                                          
+                        elif array2[j][1] == 'p':
+                            temp_array.append(array2[j])
+                            temp_array.append(array1[i])
+                            j+=1
+                          
+                        else:
+                            temp_array.append(array2[j])
+                            temp_array.append(array1[i])
+                            j+=1
+                    if j >= len(array2):
+                        break            
+            temp_array.append(array1[i])
+        while j<len(array2):
+            temp_array.append(array2[j])
+            j+=1
+        if debug: print(f"Sorted array: {temp_array}")
+        return temp_array
 
+    def sort_elements(left,right):
+        if debug: print(f"\tsort_all_elements left:{left}, right:{right}.")
+        if left+1>=right:
+            #if debug: print(f"\tBase case length of array==1")
+            return [all_elements[left]]
+        half = (left+right)//2
+        
+        array1=sort_elements(left,half)
+        array2=sort_elements(half,right)
+        return merge_elements(array1, array2)
+        
+
+    sorted_array=sort_elements(0, len(all_elements))
+    cnt = [] * len(points)
+    open_intervals = 0
+    for array in sorted_array:
+        if array[1]=='l': open_intervals+=1
+        if array[1]=='r': open_intervals-=1
+        if array[1]=='p': 
+            _index = points.index(array[0])
+            cnt.insert(_index,open_intervals)
+    return cnt
+
+
+def model_dummy(x,y, debug=False):
     if debug: print(f"Model dummy input: x:{x} y:{y}")
     #Crear dos arrays x_sorted, y_sorted con los valores de x e y ordenados.
     points = []
     [points.append([x[i],y[i]]) for i in range(0, len(x))]
     x_sorted = sorted(points,key=lambda a:a[0])
-    #x_sorted = [x[0] for x in temp]
     y_sorted = sorted(points,key=lambda a:a[1])
-    #y_sorted = [y[1] for y in temp]
-
-    if debug: print(f"points: {points}.\nx_sorted: {x_sorted}.\ny_sorted:{y_sorted}")
-
     #Punto medio de x:
-    def closest_points(x_sorted, y_sorted):
-        if debug: print(f"Closest points x_sorted:{x_sorted}, y_sorted:{y_sorted}")
-        min_distance=None
-        chosen_pair = []
-        if len(x_sorted)<=3:
-            if debug: print(f"Less than three points found!: {x_sorted}")
-            for i in range(len(x_sorted)-1):
-                distance = get_distance(x_sorted[i][0],x_sorted[i+1][0],x_sorted[i][1],x_sorted[i+1][1])
+    def get_closest_pair(points, x_sorted, y_sorted):
+        #Base case number of points <=3. Get solution by brute force
+        min_distance = None
+        if len(points)<=3:
+            for i in range(len(points)-1):
+                distance = ((x_sorted[i][0] - x_sorted[i+1][0])**2 + (x_sorted[i][1] - x_sorted[i+1][1])**2)**0.5
                 if not min_distance:
                     min_distance = distance
-                    chosen_pair = (x_sorted[i], x_sorted[i+1])
-                elif distance<min_distance:
+                elif distance < min_distance:
                     min_distance = distance
-                    chosen_pair = (x_sorted[i], x_sorted[i+1])
-           
-            if debug: print(f"Return min distance: {min_distance} from points: {chosen_pair}")
             return min_distance
-
+        #DIVIDE
         x_half = (x_sorted[0][0] + x_sorted[-1][0])//2
-        if debug: print(f"Middle line drawn at {x_half}")
-        x_subset1 = []
-        x_subset2 = []
-        y_subset1 = []
-        y_subset2 = []
-        for i in range(len(x_sorted)):
-            if x_sorted[i][0]<=x_half:
-                x_subset1.append(x_sorted[i])
-            else:
-                x_subset2.append(x_sorted[i])
-            if y_sorted[i][0]<=x_half:
-                y_subset1.append(y_sorted[i])
-            else:
-                y_subset2.append(y_sorted[i])
-        if debug: print(f"x_subset1:{x_subset1} x_subset2:{x_subset2} y_subset1:{y_subset1} y_subset2:{y_subset2}")
-        min1 = closest_points(x_subset1,y_subset1)
-        min2 = closest_points(x_subset2,y_subset2)
-        if debug: print(f"min1:{min1} min2:{min2}")
-        min_distance = min(min1, min2)
-        # array with all the points within the 2*global min vertical string
-        y_extra_array = []
-        [y_extra_array.append(y) for y in y_sorted if abs(y[0]-x_half)<min_distance]
-        if debug: print(f"\nPoints to study: {y_extra_array}")
-        if len(y_extra_array)>0:
-            points_checked=0
-            for i in range(len(y_extra_array)-1):
-                if debug: print(f"Check distance: x0:{y_extra_array[i][0]},x1:{y_extra_array[i+1][0]},y0:{y_extra_array[i][1]},y1:{y_extra_array[i+1][1]}")
-                if debug: print(f"Local min distance for points {y_extra_array[i]} and {y_extra_array[i+1]}: {((y_extra_array[i][0]-y_extra_array[i+1][0])**2+(y_extra_array[i][1]-y_extra_array[i+1][1])**2)**0.5}")
-                distance = get_distance(y_extra_array[i][0],y_extra_array[i+1][0],y_extra_array[i][1],y_extra_array[i+1][1])
-                min_distance = min(min_distance,distance)
-                points_checked+=1
-                if points_checked ==7:
-                    break  
+        
 
-        return min_distance
+    pdb.set_trace()
 
-                
-    distance = closest_points(x_sorted, y_sorted)
-    return distance
+    return 1.0
 
 
 if __name__ == '__main__':
@@ -97,8 +124,8 @@ if __name__ == '__main__':
     n = data[0]
     x = data[1::2]
     y = data[2::2]
-
-    print("{0:.9f}".format(model_good(x, y)))
+    print(f"Esto es lo que se va a mandar: x{x}, y:{y}")
+    print("{0:.9f}".format(model_dummy(x, y)))
 
 else:
     import random
@@ -231,9 +258,9 @@ else:
                     wait_for_input_after_error()
             PROMP_ON_ERRORS = True
             wait_for_input()     
-    DEBUG = False
+    DEBUG = True
 
-    ONLY_DUMMY = False
+    ONLY_DUMMY = True
 
     SAMPLE = True
     BOUNDARY = False
@@ -245,13 +272,13 @@ else:
     number_of_tests = 500
 
     sample_input_1=[2,0,0,3,4]
-    sample_output_1 = 5.0
+    sample_output_1 = [5.0]
     sample_1_text = ''
     sample_input_2=[4,7,7,1,100,4,8,7,7]
-    sample_output_2 = 0.0
+    sample_output_2 = [0.0]
     sample_2_text = ''
     sample_input_3=[11,4,4,-2,-2,-3,-4,-1,3,2,3,-4,0,1,1,-1,-1,3,-1,-4,2,-2,4]
-    sample_output_3 = 1.414213
+    sample_output_3 = [1.414213]
     sample_3_text = ''
 
 

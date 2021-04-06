@@ -15,72 +15,71 @@ if __name__ != '__main':
 def model_good(starts, ends, points, debug=False):
     if debug: print(f"model_good. starts:{starts} ends:{ends} points:{points} ")
     cnt = [0] * len(points)
+    # all_elements = []
+    # j=0
+    # for i in range(len(starts)):
+    #     all_elements.extend([[starts[i],'l'], [ends[i],'r']])
+    # for j in range(len(points)):
+    #     all_elements.append([points[j],'p'])
+            
+
+    all_elements = []
     all_elements=[[x,'l'] for x in starts]
     [all_elements.append([x,'p']) for x in points]
     [all_elements.append([x,'r']) for x in ends]
+
     sorted_array=[]
+    cnt = [] * len(points)
+
+    open_intervals = 0
     if debug: print(f"all_elements: {all_elements}")
 
-    def merge_elements(array1, array2):
+    # def merge_elements(array1, array2):
    
-        if debug: print(f"\tMerge elements array1:{array1} array2:{array2}")
-        temp_array=[]
-        i=j=0
-        for i in range(len(array1)):
-            if j<len(array2):
-                if debug: print(f"array2[j] {array2[j]}, array1[i]:{array1[i]}")
-                while array2[j][0]<=array1[i][0]:
-                    if array2[j][0]<array1[i][0]:
-                        temp_array.append(array2[j])
-                        j+=1
-                    elif array2[j][0]==array1[i][0]:
-                        if array1[i][1] == 'l':
-                            temp_array.append(array1[i])
-                            temp_array.append(array2[j])
-                            j+=1
-                        elif array2[j][1] == 'l':
-                            temp_array.append(array2[j])
-                            temp_array.append(array1[i])
-                            j+=1
-                           
-                        elif array1[j][1] == 'p':
-                            temp_array.append(array1[i])
-                            temp_array.append(array2[j])
-                            j+=1
-                                          
-                        elif array2[j][1] == 'p':
-                            temp_array.append(array2[j])
-                            temp_array.append(array1[i])
-                            j+=1
-                          
-                        else:
-                            temp_array.append(array2[j])
-                            temp_array.append(array1[i])
-                            j+=1
-                    if j >= len(array2):
-                        break            
-            temp_array.append(array1[i])
-        while j<len(array2):
-            temp_array.append(array2[j])
-            j+=1
-        if debug: print(f"Sorted array: {temp_array}")
-        return temp_array
+    #     if debug: print(f"\tMerge elements array1:{array1} array2:{array2}")
+    #     temp_array=[]
+   
+    #     for j in range(len(array1)+len(array2)):
+    #         if debug: print(f"Array1: {array1}, Array2:{array2}. Temp_array: {temp_array}, j:{j}")
+    
+    #         get_from_1=False
+    #         get_from_2=False
+    #         if len(array1)==0:
+    #             get_from_2=True
+    #         elif len(array2)==0:
+    #             get_from_1=True
+    #         elif array1[0][0]<array2[0][0]:
+    #             get_from_1=True
+    #         elif array2[0][0]<array1[0][0]:
+    #             get_from_2=True
+    #         elif array1[0][1]<=array2[0][1]:
+    #             get_from_1=True
+    #         else:
+    #             get_from_2=True
+    #         if debug: print(f"Will get from array1: {get_from_1}. Len array 1: {len(array1)}. Len array2: {len(array2)}")
+    #         if get_from_1:
+    #             temp_array.append(array1.pop(0))
+    #         else:
+    #             temp_array.append(array2.pop(0))
 
-    def sort_elements(left,right):
-        if debug: print(f"\tsort_all_elements left:{left}, right:{right}.")
-        if left+1>=right:
-            #if debug: print(f"\tBase case length of array==1")
-            return [all_elements[left]]
-        half = (left+right)//2
+    #     if debug: print(f"Sorted array: {temp_array}")
+    #     return temp_array
+
+    # def sort_elements(left,right):
+    #     if debug: print(f"\tsort_all_elements left:{left}, right:{right}.")
+    #     if left+1>=right:
+    #         #if debug: print(f"\tBase case length of array==1")
+    #         return [all_elements[left]]
+    #     half = (left+right)//2
         
-        array1=sort_elements(left,half)
-        array2=sort_elements(half,right)
-        return merge_elements(array1, array2)
+    #     array1=sort_elements(left,half)
+    #     array2=sort_elements(half,right)
+    #     return merge_elements(array1, array2)
         
 
-    sorted_array=sort_elements(0, len(all_elements))
-    cnt = [] * len(points)
-    open_intervals = 0
+  #  sorted_array=sort_elements(0, len(all_elements))
+    
+
     for array in sorted_array:
         if array[1]=='l': open_intervals+=1
         if array[1]=='r': open_intervals-=1
