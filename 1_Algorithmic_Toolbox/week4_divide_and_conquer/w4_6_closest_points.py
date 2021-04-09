@@ -113,8 +113,6 @@ def model_dummy(x,y, debug=False):
         x_half = (x_sorted[0][0] + x_sorted[-1][0])//2
         
 
-    pdb.set_trace()
-
     return 1.0
 
 
@@ -227,12 +225,25 @@ else:
                 pdb.set_trace()
                 wait_for_input_after_error()
             wait_for_input()
-    def stress_tests(number_of_tests, values):
+    def stress_tests(number_of_tests, boundaries):
+        def random_input_generator(seed, boundaries):
+            number_of_points = random.randint(1,5e4)
+            array = [number_of_intervals, number_of_points]
+            for _ in range(number_of_intervals):
+                first_number = random.randint(boundaries[0], boundaries[1]-1)
+                second_number = random.randint(first_number, boundaries[1])
+                array.append(first_number)
+                array.append(second_number)
+            for _ in range(number_of_points):
+                array.append(random.randint(boundaries[0], boundaries[1]))
+
+            return array
+
         global PROMP_ON_ERRORS
         do_the_test = test_presentation_and_prompt_user(test_name="Stress tests", additional_info=f"{number_of_tests} tests to be performed.")
         if do_the_test:
             for i in range(number_of_tests):
-                _input = random_input_generator(seed=i, values=values) if RANDOM_INPUT else [i]
+                _input = random_input_generator(seed=i, boundaries=boundaries) if RANDOM_INPUT else [i]
                 table_data = []
                 table_data.append(["Test #", "Input", "Model", "Output", "Time", "Result"])
                 (good_output, good_time) = test_model(model_good, _input)

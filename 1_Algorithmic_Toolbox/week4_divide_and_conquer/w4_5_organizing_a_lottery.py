@@ -14,82 +14,85 @@ if __name__ != '__main':
 
 def model_good(starts, ends, points, debug=False):
     if debug: print(f"model_good. starts:{starts} ends:{ends} points:{points} ")
-    cnt = [0] * len(points)
-    # all_elements = []
-    # j=0
-    # for i in range(len(starts)):
-    #     all_elements.extend([[starts[i],'l'], [ends[i],'r']])
-    # for j in range(len(points)):
-    #     all_elements.append([points[j],'p'])
-            
 
     all_elements = []
     all_elements=[[x,'l'] for x in starts]
     [all_elements.append([x,'p']) for x in points]
     [all_elements.append([x,'r']) for x in ends]
 
-    sorted_array=[]
-    cnt = [] * len(points)
+    cnt = []
 
     open_intervals = 0
     if debug: print(f"all_elements: {all_elements}")
-
-    # def merge_elements(array1, array2):
-   
-    #     if debug: print(f"\tMerge elements array1:{array1} array2:{array2}")
-    #     temp_array=[]
-   
-    #     for j in range(len(array1)+len(array2)):
-    #         if debug: print(f"Array1: {array1}, Array2:{array2}. Temp_array: {temp_array}, j:{j}")
+    #Randomized quick sort
+    def randomized_quick_sort(start, end):
+        #Base case. Length 1 just return dummy value 0:
+        if debug: print(f"all_elements:{all_elements} start:{start} end:{end}")
+        if start >= end:
+            return 0
+        pivot_index = random.randint(start,end-1)
+        if debug: print(f"pivot_index:{pivot_index}")
+        all_elements[start], all_elements[pivot_index] = all_elements[pivot_index], all_elements[start]
+        if debug: print(f"all_elements swapped:{all_elements}")
+        i = start+1
+        for j in range(start+1,end):
+            swapp = False
+            if debug: print(f"Iteration {j}. Comparing {all_elements[j]} with {all_elements[start]}")
+            if all_elements[j][0] < all_elements[start][0]:
+                swapp = True
+            elif all_elements[j][0] == all_elements[start][0]:
+                if all_elements[j][1]<all_elements[start][1]:
+                    swapp=True
+            if swapp:
+                if debug: print(f"Swapping {all_elements[j]} with {all_elements[i]}")
+                all_elements[j], all_elements[i] = all_elements[i], all_elements[j]
+                if debug: print(f"all_elements after:{all_elements}")
+                i+=1
+        all_elements[start], all_elements[i-1] = all_elements[i-1], all_elements[start]
+        randomized_quick_sort(start, i-1)
+        randomized_quick_sort(i, end)
+    randomized_quick_sort(0,len(all_elements))   
+    # all_elements.sort()
+    results = {}
     
-    #         get_from_1=False
-    #         get_from_2=False
-    #         if len(array1)==0:
-    #             get_from_2=True
-    #         elif len(array2)==0:
-    #             get_from_1=True
-    #         elif array1[0][0]<array2[0][0]:
-    #             get_from_1=True
-    #         elif array2[0][0]<array1[0][0]:
-    #             get_from_2=True
-    #         elif array1[0][1]<=array2[0][1]:
-    #             get_from_1=True
-    #         else:
-    #             get_from_2=True
-    #         if debug: print(f"Will get from array1: {get_from_1}. Len array 1: {len(array1)}. Len array2: {len(array2)}")
-    #         if get_from_1:
-    #             temp_array.append(array1.pop(0))
-    #         else:
-    #             temp_array.append(array2.pop(0))
-
-    #     if debug: print(f"Sorted array: {temp_array}")
-    #     return temp_array
-
-    # def sort_elements(left,right):
-    #     if debug: print(f"\tsort_all_elements left:{left}, right:{right}.")
-    #     if left+1>=right:
-    #         #if debug: print(f"\tBase case length of array==1")
-    #         return [all_elements[left]]
-    #     half = (left+right)//2
-        
-    #     array1=sort_elements(left,half)
-    #     array2=sort_elements(half,right)
-    #     return merge_elements(array1, array2)
-        
-
-  #  sorted_array=sort_elements(0, len(all_elements))
-    
-
-    for array in sorted_array:
+    for array in all_elements:
         if array[1]=='l': open_intervals+=1
-        if array[1]=='r': open_intervals-=1
-        if array[1]=='p': 
-            _index = points.index(array[0])
-            cnt.insert(_index,open_intervals)
+        elif array[1]=='r': open_intervals-=1
+        elif array[1]=='p': 
+            results[array[0]] = open_intervals
+    if debug: print(f"Last array: {array}. results: {results}. cnt:{cnt}")
+    for i in range(len(points)):
+        cnt.append(str(results[points[i]]))
+    if debug: print(f"Returning: {cnt}")
     return cnt
 
-
 def model_dummy(starts, ends, points, debug=False):
+    if debug: print(f"model_good. starts:{starts} ends:{ends} points:{points} ")
+
+    all_elements = []
+    all_elements=[[x,'l'] for x in starts]
+    [all_elements.append([x,'p']) for x in points]
+    [all_elements.append([x,'r']) for x in ends]
+
+    cnt = []
+
+    open_intervals = 0
+    if debug: print(f"all_elements: {all_elements}")
+    all_elements.sort()
+    results = {}
+    
+    for array in all_elements:
+        if array[1]=='l': open_intervals+=1
+        elif array[1]=='r': open_intervals-=1
+        elif array[1]=='p': 
+            results[array[0]] = open_intervals
+    if debug: print(f"Last array: {array}. results: {results}. cnt:{cnt}")
+    for i in range(len(points)):
+        cnt.append(str(results[points[i]]))
+    if debug: print(f"Returning: {cnt}")
+    return cnt
+
+def model_dummy2(starts, ends, points, debug=False):
     if debug: print(f"Model dummy input: starts:{starts} ends:{ends} points:{points}")
     cnt = [0] * len(points)
     for i in range(len(points)):
@@ -153,13 +156,6 @@ else:
             print(table.table+"\n")
         else:
             print(table.table)
-    def random_input_generator(seed, values):
-        array = []
-        for _ in range(0, values[0]):
-            array.append(random.randint(0, values[1]))
-        random_value_in_array = array[random.randint(0, len(array)-1)]
-        array = [random_value_in_array if random.randint(0,1) == 1 else value for value in array]
-        return [array]
         
     def test_presentation_and_prompt_user(test_name, additional_info = None):
         _string = f"{Style.BRIGHT}{test_name} test{Style.RESET_ALL}. "
@@ -214,12 +210,26 @@ else:
                 pdb.set_trace()
                 wait_for_input_after_error()
             wait_for_input()
-    def stress_tests(number_of_tests, values):
+    def stress_tests(number_of_tests, boundaries):
+        def random_input_generator(seed, boundaries):
+            number_of_points = random.randint(1,5e4)
+            number_of_intervals = random.randint(1,5e4)
+            array = [number_of_intervals, number_of_points]
+            for _ in range(number_of_intervals):
+                first_number = random.randint(boundaries[0], boundaries[1]-1)
+                second_number = random.randint(first_number, boundaries[1])
+                array.append(first_number)
+                array.append(second_number)
+            for _ in range(number_of_points):
+                array.append(random.randint(boundaries[0], boundaries[1]))
+
+            return array
+
         global PROMP_ON_ERRORS
         do_the_test = test_presentation_and_prompt_user(test_name="Stress tests", additional_info=f"{number_of_tests} tests to be performed.")
         if do_the_test:
             for i in range(number_of_tests):
-                _input = random_input_generator(seed=i, values=values) if RANDOM_INPUT else [i]
+                _input = random_input_generator(seed=i, boundaries=boundaries) if RANDOM_INPUT else [i]
                 table_data = []
                 table_data.append(["Test #", "Input", "Model", "Output", "Time", "Result"])
                 (good_output, good_time) = test_model(model_good, _input)
@@ -251,25 +261,25 @@ else:
 
     SAMPLE = True
     BOUNDARY = False
-    STRESS = False
+    STRESS = True
 
     RANDOM_INPUT=True
     PROMPT_USER = True
     PROMP_ON_ERRORS = True
-    number_of_tests = 500
+    number_of_tests = 2000
 
-    sample_input_1=[2,3,0,5,7,10,1,6,11]
-    sample_output_1 = [1,0,0]
+    sample_input_1=[1, 1, int(1e-8), int(1e8), 0]
+    sample_output_1 = ['1']
     sample_1_text = ''
-    sample_input_2=[1,3,-10,10,-100,100,0]
-    sample_output_2 = [0,0,1]
+    sample_input_2=[1,1,-100,100,int(1e8)]
+    sample_output_2 = ['0']
     sample_2_text = ''
     sample_input_3=[3,2,0,5,-3,2,7,10,1,6]
-    sample_output_3 = [2,0]
+    sample_output_3 = ['2','0']
     sample_3_text = ''
 
 
-    stress_tests_boundary = [1000,500]
+    stress_tests_boundary = [int(-1e8),int(1e8)]
     # 10 numeros tendra el array
     # 10 valor máximo (el mínimo es 0)
     decimal_preccision = 4
@@ -301,7 +311,7 @@ else:
             good_model_test(_input=[[1]], test_name="Boundary")
             good_model_test(_input=[[1e3]], test_name="Boundary")
         elif choice == 't':
-            stress_tests(number_of_tests=number_of_tests, values=stress_tests_boundary)
+            stress_tests(number_of_tests=number_of_tests, boundaries=stress_tests_boundary)
         elif choice == 'a':
             PROMPT_USER = False
             if SAMPLE: 
@@ -312,7 +322,7 @@ else:
                 good_model_test(_input=[[1]], test_name="Boundary")
                 good_model_test(_input=[[1e3]], test_name="Boundary")
             if STRESS:
-                stress_tests(number_of_tests=number_of_tests, values=stress_tests_boundary)
+                stress_tests(number_of_tests=number_of_tests, boundaries=stress_tests_boundary)
 
         elif choice == 'x':
             sys.exit()
