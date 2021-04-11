@@ -12,118 +12,84 @@ if __name__ != '__main':
     logger.addHandler(stream_handler)
    
 
-def model_good(starts, ends, points, debug=False):
-    if debug: print(f"model_good. starts:{starts} ends:{ends} points:{points} ")
-    cnt = [0] * len(points)
-    all_elements=[[x,'l'] for x in starts]
-    [all_elements.append([x,'p']) for x in points]
-    [all_elements.append([x,'r']) for x in ends]
-    sorted_array=[]
-    if debug: print(f"all_elements: {all_elements}")
+def model_good(n, debug=False):
+    if debug: print(f"input n: {n}")
+    operations=[1]
+    for i in range(2,n+1):
+        min_number_operations = operations[i-2]+1
+        if i%2==0 and min_number_operations> operations[(i-1)//2]+1:
+            min_number_operations = operations[(i-1)//2]+1
+        if i%3==0 and min_number_operations> operations[(i-1)//3]+1:
+            min_number_operations = operations[(i-1)//3]+1
+        operations.append(min_number_operations)
+    if debug: print(f"Operations: {operations}")
+    sequence=[n]
+    while n>1:
+        _sum= operations[n-1]
+        _by2= operations[n//2] if n%2==0 else _sum+1
+        _by3= operations[n//2] if n%2==0 else _sum+1
+        if _sum< min(_by2, _by3):
+            n=n-1
+        elif _by2< min(_sum,_by3):
+            n=n//2
+        else:
+            n=n//3
+        sequence.append(n)
+    sequence = [x for x in reversed(sequence)]
+    return sequence
+    
 
-    def merge_elements(array1, array2):
-   
-        if debug: print(f"\tMerge elements array1:{array1} array2:{array2}")
-        temp_array=[]
-        i=j=0
-        for i in range(len(array1)):
-            if j<len(array2):
-                if debug: print(f"array2[j] {array2[j]}, array1[i]:{array1[i]}")
-                while array2[j][0]<=array1[i][0]:
-                    if array2[j][0]<array1[i][0]:
-                        temp_array.append(array2[j])
-                        j+=1
-                    elif array2[j][0]==array1[i][0]:
-                        if array1[i][1] == 'l':
-                            temp_array.append(array1[i])
-                            temp_array.append(array2[j])
-                            j+=1
-                        elif array2[j][1] == 'l':
-                            temp_array.append(array2[j])
-                            temp_array.append(array1[i])
-                            j+=1
-                           
-                        elif array1[j][1] == 'p':
-                            temp_array.append(array1[i])
-                            temp_array.append(array2[j])
-                            j+=1
-                                          
-                        elif array2[j][1] == 'p':
-                            temp_array.append(array2[j])
-                            temp_array.append(array1[i])
-                            j+=1
-                          
-                        else:
-                            temp_array.append(array2[j])
-                            temp_array.append(array1[i])
-                            j+=1
-                    if j >= len(array2):
-                        break            
-            temp_array.append(array1[i])
-        while j<len(array2):
-            temp_array.append(array2[j])
-            j+=1
-        if debug: print(f"Sorted array: {temp_array}")
-        return temp_array
-
-    def sort_elements(left,right):
-        if debug: print(f"\tsort_all_elements left:{left}, right:{right}.")
-        if left+1>=right:
-            #if debug: print(f"\tBase case length of array==1")
-            return [all_elements[left]]
-        half = (left+right)//2
         
-        array1=sort_elements(left,half)
-        array2=sort_elements(half,right)
-        return merge_elements(array1, array2)
         
 
-    sorted_array=sort_elements(0, len(all_elements))
-    cnt = [] * len(points)
-    open_intervals = 0
-    for array in sorted_array:
-        if array[1]=='l': open_intervals+=1
-        if array[1]=='r': open_intervals-=1
-        if array[1]=='p': 
-            _index = points.index(array[0])
-            cnt.insert(_index,open_intervals)
-    return cnt
-
-
-def model_dummy(x,y, debug=False):
-    if debug: print(f"Model dummy input: x:{x} y:{y}")
-    #Crear dos arrays x_sorted, y_sorted con los valores de x e y ordenados.
-    points = []
-    [points.append([x[i],y[i]]) for i in range(0, len(x))]
-    x_sorted = sorted(points,key=lambda a:a[0])
-    y_sorted = sorted(points,key=lambda a:a[1])
-    #Punto medio de x:
-    def get_closest_pair(points, x_sorted, y_sorted):
-        #Base case number of points <=3. Get solution by brute force
-        min_distance = None
-        if len(points)<=3:
-            for i in range(len(points)-1):
-                distance = ((x_sorted[i][0] - x_sorted[i+1][0])**2 + (x_sorted[i][1] - x_sorted[i+1][1])**2)**0.5
-                if not min_distance:
-                    min_distance = distance
-                elif distance < min_distance:
-                    min_distance = distance
-            return min_distance
-        #DIVIDE
-        x_half = (x_sorted[0][0] + x_sorted[-1][0])//2
         
+# def model_good(n, debug=False):
+#     if debug: print(f"Input: {n}")
+#     sequence = [1]
+#     operations = [1]
+#     current_number = 0
+#     i=1
+#     while True:
+#         if debug: print(f"Iterating for {i}. Current sequence: {sequence}. Current operations: {operations}")
+#         min_number_of_operations=0
+#         if len(operations)==i:
+#             min_number_of_operations = operations[i-1]+1
+#             sequence.append(sequence[i-1]+1)
+#         if i%2==0 and min_number_of_operations>operations[i//2]+1:
+#             min_number_of_operations = operations[i//2]+1
+#             sequence[i] = sequence[i//2]*2
+#         if i%3==0 and min_number_of_operations>operations[i//3]+1:
+#             min_number_of_operations = operations[i//3]+1
+#             sequence[i] = sequence[i//3]*3
+#         operations.append(min_number_of_operations)
+        
+#         i+=1
 
-    return 1.0
+#     if debug: print(f"Output. operations: {operations}.\nSequence: {sequence}")
+#     return sequence
+
+def model_dummy(n, debug=False):
+    sequence = []
+    while n >= 1:
+        sequence.append(n)
+        if n % 3 == 0:
+            n = n // 3
+        elif n % 2 == 0:
+            n = n // 2
+        else:
+            n = n - 1
+    return reversed(sequence)
+
 
 
 if __name__ == '__main__':
     input = sys.stdin.read()
-    data = list(map(int, input.split()))
-    n = data[0]
-    x = data[1::2]
-    y = data[2::2]
-    print(f"Esto es lo que se va a mandar: x{x}, y:{y}")
-    print("{0:.9f}".format(model_dummy(x, y)))
+    n = int(input)
+    sequence = list(model_good(n))
+    print(len(sequence) - 1)
+    for x in sequence:
+        print(x, end=' ')
+
 
 else:
     import random
@@ -140,10 +106,7 @@ else:
 
         model_start = time.time()
         model_output=[]
-        n = data[0]
-        x = data[1::2]
-        y = data[2::2]
-        model_output = model(x, y , debug=DEBUG)
+        model_output = model(data, debug=DEBUG)
         total_time = round(time.time() - model_start,2)
         if type(model_output) is float:
             model_output = round(model_output, decimal_preccision)
@@ -282,23 +245,21 @@ else:
     PROMP_ON_ERRORS = True
     number_of_tests = 500
 
-    sample_input_1=[2,0,0,3,4]
-    sample_output_1 = [5.0]
+    sample_input_1= 1
+    sample_output_1 = [1]
     sample_1_text = ''
-    sample_input_2=[4,7,7,1,100,4,8,7,7]
-    sample_output_2 = [0.0]
+    sample_input_2=5
+    sample_output_2 =[1,2,4,5] 
     sample_2_text = ''
-    sample_input_3=[11,4,4,-2,-2,-3,-4,-1,3,2,3,-4,0,1,1,-1,-1,3,-1,-4,2,-2,4]
-    sample_output_3 = [1.414213]
+    sample_input_3=96234
+    sample_output_3 =[1,3,9,10,11,22,66,198,594,1782,5346,16038,16039,32078,96234] 
     sample_3_text = ''
 
+    stress_tests_boundary = [1,1000]
 
-    stress_tests_boundary = [1000,500]
-    # 10 numeros tendra el array
-    # 10 valor máximo (el mínimo es 0)
     decimal_preccision = 4
 
-    print(f"\n{Style.BRIGHT}Closest Points Algorithm.{Style.RESET_ALL}\n")
+    print(f"\n{Style.BRIGHT}Primitive Calculator Algorithm.{Style.RESET_ALL}\n")
     choices = []
     if SAMPLE: choices.append('s')
     if BOUNDARY: choices.append('b')
@@ -320,7 +281,6 @@ else:
         if choice == 's':
             good_model_test(_input=sample_input_1, test_name="Sample", test_number=1, known_result=sample_output_1)
             good_model_test(_input=sample_input_2, test_name="Sample", test_number=2, known_result=sample_output_2)
-            good_model_test(_input=sample_input_3, test_name="Sample", test_number=3, known_result=sample_output_3)
         elif choice == 'b':
             good_model_test(_input=[[1]], test_name="Boundary")
             good_model_test(_input=[[1e3]], test_name="Boundary")
@@ -340,3 +300,5 @@ else:
 
         elif choice == 'x':
             sys.exit()
+
+

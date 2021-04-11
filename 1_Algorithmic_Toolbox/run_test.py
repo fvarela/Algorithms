@@ -1,1 +1,1 @@
-from week4_divide_and_conquer import w4_5_organizing_a_lottery
+from week5_dynamic_programming1 import w5_2_primitive_calculator

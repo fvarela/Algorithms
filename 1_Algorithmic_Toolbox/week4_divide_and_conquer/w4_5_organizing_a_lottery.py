@@ -214,6 +214,8 @@ else:
         def random_input_generator(seed, boundaries):
             number_of_points = random.randint(1,5e4)
             number_of_intervals = random.randint(1,5e4)
+            # number_of_points = int(1)
+            # number_of_intervals = int(1)
             array = [number_of_intervals, number_of_points]
             for _ in range(number_of_intervals):
                 first_number = random.randint(boundaries[0], boundaries[1]-1)
@@ -266,7 +268,8 @@ else:
     RANDOM_INPUT=True
     PROMPT_USER = True
     PROMP_ON_ERRORS = True
-    number_of_tests = 2000
+    number_of_tests = 20000
+    #number_of_tests = 1
 
     sample_input_1=[1, 1, int(1e-8), int(1e8), 0]
     sample_output_1 = ['1']
