@@ -12,88 +12,45 @@ if __name__ != '__main':
     logger.addHandler(stream_handler)
    
 
-def model_good(n, debug=False):
-    if debug: print(f"input n: {n}")
-    operations=[1]
-    for i in range(2,n+1):
-        #if i==16038:pdb.set_trace()
-        min_number_operations = operations[i-2]+1
-        if (i-1)%2==0 and min_number_operations> operations[(i-1)//2]+1:
-            min_number_operations = operations[(i-1)//2]+1
-        if (i-1)%3==0 and min_number_operations> operations[(i-1)//3]+1:
-            min_number_operations = operations[(i-1)//3]+1
-        operations.append(min_number_operations)
-    #if debug: print(f"Operations: {operations}")
-    sequence=[n]
-    while n>1:
-        _sum= operations[n-1]
-        _by2= operations[n//2] if n%2==0 else _sum+1
-        _by3= operations[n//3] if n%3==0 else _sum+1
-        #if n==16038: pdb.set_trace()
-        if _sum<= min(_by2, _by3):
-            if debug: print(f"n={n} _sum.{_sum} Min number of operations: sum {_sum}, by2: {_by2}, by3:{_by3}")
-            n=n-1
-        elif _by2<= min(_sum,_by3):
-            if debug: print(f"n={n} _by2.{_by2} Min number of operations: sum {_sum}, by2: {_by2}, by3:{_by3}")
-            n=n//2
-        else:
-            if debug: print(f"n={n} _by3.{_by3} Min number of operations: sum {_sum}, by2: {_by2}, by3:{_by3}")
-            n=n//3
-        sequence.append(n)
-    sequence = [x for x in reversed(sequence)]
-    return sequence
-    
-
-        
-        
-
-        
-# def model_good(n, debug=False):
-#     if debug: print(f"Input: {n}")
-#     sequence = [1]
-#     operations = [1]
-#     current_number = 0
-#     i=1
-#     while True:
-#         if debug: print(f"Iterating for {i}. Current sequence: {sequence}. Current operations: {operations}")
-#         min_number_of_operations=0
-#         if len(operations)==i:
-#             min_number_of_operations = operations[i-1]+1
-#             sequence.append(sequence[i-1]+1)
-#         if i%2==0 and min_number_of_operations>operations[i//2]+1:
-#             min_number_of_operations = operations[i//2]+1
-#             sequence[i] = sequence[i//2]*2
-#         if i%3==0 and min_number_of_operations>operations[i//3]+1:
-#             min_number_of_operations = operations[i//3]+1
-#             sequence[i] = sequence[i//3]*3
-#         operations.append(min_number_of_operations)
-        
-#         i+=1
-
-#     if debug: print(f"Output. operations: {operations}.\nSequence: {sequence}")
-#     return sequence
+def model_good(first, second, debug=False):
+    if debug: print(f"Model good. Inputs:{first}, {second}.")
+    row = [0]*(len(first)+1)
+    matrix = []
+    [matrix.append(row.copy()) for _ in range(len(second)+1)]
+    if debug: print(f"Matrix before execution: {matrix}")
+    #matrix[0][0]==0 if first[0] == second[0] else 1
+    for i in range(1,len(second)+1):
+        for j in range(1,len(first)+1):
+            if debug: print(f"Comparing elements i:{i}, j:{j}")
+            base_value = max(matrix[i][j-1], matrix[i-1][j])
+            if first[j-1] == second[i-1]:
+                if debug: print(f"Match!. Matrix before: {matrix}")
+                matrix[i][j] = base_value+1
+                if debug: print(f"Match!. Matrix after: {matrix}")
+            else:
+                matrix[i][j] = base_value
+    if debug: print(f"Matrix after execution: {matrix}")
+    return matrix[i][j]
 
 def model_dummy(n, debug=False):
-    sequence = []
-    while n >= 1:
-        sequence.append(n)
-        if n % 3 == 0:
-            n = n // 3
-        elif n % 2 == 0:
-            n = n // 2
-        else:
-            n = n - 1
-    return reversed(sequence)
+    pass
 
 
 
 if __name__ == '__main__':
     input = sys.stdin.read()
-    n = int(input)
-    sequence = list(model_good(n))
-    print(len(sequence) - 1)
-    for x in sequence:
-        print(x, end=' ')
+    data = list(map(int, input.split()))
+
+    n = data[0]
+    data = data[1:]
+    a = data[:n]
+
+    data = data[n:]
+    m = data[0]
+    data = data[1:]
+    b = data[:m]
+
+    print(model_good(a, b))
 
 
 else:
@@ -111,7 +68,7 @@ else:
 
         model_start = time.time()
         model_output=[]
-        model_output = model(data, debug=DEBUG)
+        model_output = model(data[0],data[1], debug=DEBUG)
         total_time = round(time.time() - model_start,2)
         if type(model_output) is float:
             model_output = round(model_output, decimal_preccision)
@@ -237,7 +194,7 @@ else:
                     wait_for_input_after_error()
             PROMP_ON_ERRORS = True
             wait_for_input()     
-    DEBUG = False
+    DEBUG = True
 
     ONLY_DUMMY = False
 
@@ -250,21 +207,21 @@ else:
     PROMP_ON_ERRORS = True
     number_of_tests = 500
 
-    sample_input_1= 1
-    sample_output_1 = [1]
+    sample_input_1= [[2,7,5],[2,5]]
+    sample_output_1 = 2
     sample_1_text = ''
-    sample_input_2=5
-    sample_output_2 =[1,3,4,5] 
+    sample_input_2=[[7],[1,2,3,4]]
+    sample_output_2 =0 
     sample_2_text = ''
-    sample_input_3=96234
-    sample_output_3 =[1,3,9,10,11,33,99,297,891,2673,8019,16038,16039,48117,96234] 
+    sample_input_3=[[2,7,8,3],[5,2,8,7]]
+    sample_output_3 =2
     sample_3_text = ''
 
     stress_tests_boundary = [1,1000]
 
     decimal_preccision = 4
 
-    print(f"\n{Style.BRIGHT}Primitive Calculator Algorithm.{Style.RESET_ALL}\n")
+    print(f"\n{Style.BRIGHT}Longest Common Subsequence of Two Sequences Algorithm.{Style.RESET_ALL}\n")
     choices = []
     if SAMPLE: choices.append('s')
     if BOUNDARY: choices.append('b')
