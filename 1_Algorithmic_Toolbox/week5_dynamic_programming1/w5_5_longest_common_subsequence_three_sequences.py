@@ -12,56 +12,49 @@ if __name__ != '__main':
     logger.addHandler(stream_handler)
    
 
-def model_good(first, second, debug=False):
-    if debug: print(f"Model good. Inputs:{first}, {second}.")
-    row = [0]*(len(first)+1)
-    matrix = []
-    [matrix.append(row.copy()) for _ in range(len(second)+1)]
-    if debug: print(f"Matrix before execution: {matrix}")
-    #matrix[0][0]==0 if first[0] == second[0] else 1
-    for i in range(1,len(second)+1):
+def model_good(first, second, third, debug=False):
+    if debug: print(f"Model good. Inputs:{first}, {second}, {third}.")
+    memoization = {}
+    def lcs (s1, s2, s3, i, j, k):
+        key = str(i)+','+str(j)+','+str(k)
+        if key in memoization.keys():
+            return memoization[key]
+        if i == 0 or j ==0 or k == 0:
+            result = 0
+        elif s1[i-1] == s2[j-1] == s3[k-1]:
+            result = 1 + lcs(s1, s2, s3, i-1, j-1, k-1)
+        else:
+            result =  max (lcs(s1,s2,s3,i-1,j,k), lcs(s1,s2,s3,i,j-1,k), lcs(s1,s2,s3,i,j,k-1))
+        memoization[key] = result
+        return result
+    return lcs(first, second, third, len(first), len(second), len(third))
 
-        for j in range(1,len(first)+1):
-            if first[j-1] == second[i-1]:
-                matrix[i][j] = 1 + matrix[i-1][j-1]
-            else:
-                matrix[i][j] = max(matrix[i-1][j], matrix[i][j-1])
-
-    if debug: print(f"Matrix after execution: {matrix}")
-    return matrix[i][j]
-
-def model_dummy(first, second, debug=False):
-    from itertools import combinations
-
-    s1 = first
-    s2 = second
-    answer = 0
-    result = []
-    for seq_len in range(1, min(len(s1), len(s2))+1):
-    # enumerate all pairs of subsequences of s1 and s2 of length seq_len:
-        for subseq1 in combinations(s1, seq_len):
-            for subseq2 in combinations(s2, seq_len):
-                if subseq1 == subseq2:
-                    answer = seq_len
-                    result = subseq1
-            
-    return len(result)
+def model_dummy(first, second, third, debug=False):
+    if debug: print(f"Model good. Inputs:{first}, {second}, {third}.")
+    def lcs (s1, s2, s3, i, j, k):
+        if i == 0 or j ==0 or k == 0:
+            return 0
+        if s1[i-1] == s2[j-1] == s3[k-1]:
+            return 1 + lcs(s1, s2, s3, i-1, j-1, k-1)
+        return max (lcs(s1,s2,s3,i-1,j,k), lcs(s1,s2,s3,i,j-1,k), lcs(s1,s2,s3,i,j,k-1))
+    return lcs(first, second, third, len(first), len(second), len(third))
 
 
 if __name__ == '__main__':
     input = sys.stdin.read()
     data = list(map(int, input.split()))
-
-    n = data[0]
+    an = data[0]
     data = data[1:]
-    a = data[:n]
-
-    data = data[n:]
-    m = data[0]
+    a = data[:an]
+    data = data[an:]
+    bn = data[0]
     data = data[1:]
-    b = data[:m]
-
-    print(model_good(a, b))
+    b = data[:bn]
+    data = data[bn:]
+    cn = data[0]
+    data = data[1:]
+    c = data[:cn]
+    print(model_good(a, b, c))
 
 
 else:
@@ -79,7 +72,7 @@ else:
 
         model_start = time.time()
         model_output=[]
-        model_output = model(data[0],data[1], debug=DEBUG)
+        model_output = model(data[0],data[1],data[2], debug=DEBUG)
         total_time = round(time.time() - model_start,2)
         if type(model_output) is float:
             model_output = round(model_output, decimal_preccision)
@@ -100,13 +93,6 @@ else:
             print(table.table+"\n")
         else:
             print(table.table)
-    def random_input_generator(seed, values):
-        array = []
-        for _ in range(0, values[0]):
-            array.append(random.randint(0, values[1]))
-        random_value_in_array = array[random.randint(0, len(array)-1)]
-        array = [random_value_in_array if random.randint(0,1) == 1 else value for value in array]
-        return [array]
         
     def test_presentation_and_prompt_user(test_name, additional_info = None):
         _string = f"{Style.BRIGHT}{test_name} test{Style.RESET_ALL}. "
@@ -132,15 +118,14 @@ else:
         else:
             print("Test finished.\n")
     def wait_for_input_after_error():
-        global PROMP_ON_ERRORS
-        if PROMP_ON_ERRORS:
+        if PROMPT_ON_ERRORS:
             choice = None
             while choice not in ('y','x', 'a'):
                 choice = input("Press 'y' to continue, 'a' to continue and not be asked again, 'x' to exit.\n")
                 if choice == 'x':
                     sys.exit()
                 elif choice == 'a':
-                    PROMP_ON_ERRORS = False
+                    PROMPT_ON_ERRORS = False
                     continue
                 elif choice=='y':
                     break
@@ -206,30 +191,25 @@ else:
 
     SAMPLE = True
     BOUNDARY = False
-    STRESS = True
+    STRESS = False
 
     RANDOM_INPUT=True
     PROMPT_USER = True
-    PROMP_ON_ERRORS = True
+    PROMPT_ON_ERRORS = True
     number_of_tests = 500
 
-    sample_input_1= [[3,5,3,3,0,1,0,1],[0,2,0,0,4,2,5,0]]
+    sample_input_1= [[1,2,3],[2,1,3],[1,3,5]]
     sample_output_1 = 2
     sample_1_text = ''
-    sample_input_2=[[7],[1,2,3,4]]
-    sample_output_2 =0 
+    sample_input_2=[[8,3,2,1,7],[8,2,1,3,8,10,7],[6,8,3,1,4,7]]
+    sample_output_2 = 3 
     sample_2_text = ''
-    sample_input_3=[[2,7,8,3],[5,2,8,7]]
-    sample_output_3 =2
-    sample_3_text = ''
-    sample_input_4=[[0,5,2,5],[0,2,5]]
-    sample_output_4 =3
-    sample_4_text = ''
+
     stress_tests_boundary = [1,1000]
 
     decimal_preccision = 4
 
-    print(f"\n{Style.BRIGHT}Longest Common Subsequence of Two Sequences Algorithm.{Style.RESET_ALL}\n")
+    print(f"\n{Style.BRIGHT}Longest Common Subsequence of Three Sequences Algorithm.{Style.RESET_ALL}\n")
     choices = []
     if SAMPLE: choices.append('s')
     if BOUNDARY: choices.append('b')
@@ -251,8 +231,7 @@ else:
         if choice == 's':
             good_model_test(_input=sample_input_1, test_name="Sample", test_number=1, known_result=sample_output_1)
             good_model_test(_input=sample_input_2, test_name="Sample", test_number=2, known_result=sample_output_2)
-            good_model_test(_input=sample_input_3, test_name="Sample", test_number=2, known_result=sample_output_3)
-            good_model_test(_input=sample_input_4, test_name="Sample", test_number=2, known_result=sample_output_4)
+
         elif choice == 'b':
             good_model_test(_input=[[1]], test_name="Boundary")
             good_model_test(_input=[[1e3]], test_name="Boundary")
@@ -263,8 +242,7 @@ else:
             if SAMPLE: 
                 good_model_test(_input=sample_input_1, test_name="Sample", test_number=1, known_result=sample_output_1)
                 good_model_test(_input=sample_input_2, test_name="Sample", test_number=2, known_result=sample_output_2)
-                good_model_test(_input=sample_input_3, test_name="Sample", test_number=3, known_result=sample_output_3)
-                good_model_test(_input=sample_input_4, test_name="Sample", test_number=3, known_result=sample_output_4)
+              
             if BOUNDARY: 
                 good_model_test(_input=[[1]], test_name="Boundary")
                 good_model_test(_input=[[1e3]], test_name="Boundary")

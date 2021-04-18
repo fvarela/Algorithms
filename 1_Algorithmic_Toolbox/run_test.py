@@ -1,1 +1,1 @@
-from week5_dynamic_programming1 import w5_4_longest_common_subsequence
+from week6_dynamic_programming2 import w6_1_maximum_amount_of_gold
