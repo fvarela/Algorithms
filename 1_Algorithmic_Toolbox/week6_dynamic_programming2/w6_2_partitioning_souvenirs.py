@@ -14,30 +14,63 @@ if __name__ != '__main':
    
 
 def model_good(A, debug=False):
-    #knapsack problem limitando la capacidad del saco a 1/3 del valor total del array
     total_value = sum(A)
-    if total_value%3!=0:
+    if total_value%3!=0 or len(A)<3:
         return 0
-    third = total_value/3
-    selected = [0]*len(A)
-    table = [[0 for i in range(third +1 )] for j in range(len(A)+1)]
+    third = int(total_value/3)
+    for x in A:
+         if x>third: return 0
+    table = [[0 for i in range(len(A)+1)] for j in range(third +1)]
     
-    #Crear un array selected de 0 de longitud igual a A
-    #Coger el valor total de A y dividirlo entre 3. Si hay resto != 0 devolver un 0
-    #Crear un algoritmo knapsack normal y poner en selected 1 para cada valor A que se use.
-    #Devolver 1 si los tres knapsacks tienen valor 1/3
-    pdb.set_trace()
+    well_divided = 0
+    for i in range(1, third+1):
+        for j in range(1, len(A)+1):
+            table[i][j] = table[i][j-1]
+            if A[j-1] <= i:
+                new_value = table[i-A[j-1]][j-1] + A[j-1]
+                if table[i][j]< new_value:
+                    table[i][j] = new_value
+            if table[i][j] == third:
+                well_divided += 1
+    if well_divided < 3:
+        return 0
+    else:
+        return 1
+
+
 
 def model_dummy(W, debug=False):
-    for c in itertools.product(range(3), repeat=len(A)):
-        sums = [None] * 3
-        for i in range(3):
-            sums[i] = sum(A[k] for k in range(len(A)) if c[k] == i)
+    #knapsack problem limitando la capacidad del saco a 1/3 del valor total del array
+    A.sort()
+    total_value = sum(A)
+    if total_value%3!=0 or len(A)<3:
+        return 0
+    third = int(total_value/3)
+    for x in A:
+         if x>third: return 0
 
-        if sums[0] == sums[1] and sums[1] == sums[2]:
-            return 1
-
-    return 0
+    for target in [third, int(third*(2/3)), total_value]:
+        selected = [0]*len(A)
+        table = [[0 for i in range(target +1 )] for j in range(len(A)+1)]
+        for i in range(1,len(table)):
+            for j in range(0,len(table[0])):
+                up_value = table[i-1][j]
+                other_value = table[i-1][j-A[i-1]] + A[i-1] if j-A[i-1] >=0 else 0
+                table[i][j] = max(up_value, other_value)
+        # print(f"{table=}, {i=}, {j=}")
+        if table[i][j]!= target:
+            return 0
+        remaining_value = target
+        for k in range(len(table)-1,1,-1):
+            if remaining_value > max(table[k-1]):
+                selected[k-1] = 1
+                remaining_value -= A[k-1]
+            else:
+                selected[k-1] = 0
+        # for i in selected:
+        #     if selected[i] == 1:
+        #         del A[i]
+    return 1
 
 
 if __name__ == '__main__':
@@ -187,8 +220,8 @@ else:
     PROMPT_ON_ERRORS = True
     number_of_tests = 500
 
-    sample_input_1= [3,3,3,3]
-    sample_output_1 = 0
+    sample_input_1= [9,20,6,6,8,2,4,5]
+    sample_output_1 = 1
     sample_1_text = ''
     sample_input_2= [40]
     sample_output_2 = 0
@@ -226,6 +259,8 @@ else:
             
         if choice == 's':
             good_model_test(_input=sample_input_1, test_name="Sample", test_number=1, known_result=sample_output_1)
+            good_model_test(_input=sample_input_2, test_name="Sample", test_number=2, known_result=sample_output_2)
+            good_model_test(_input=sample_input_3, test_name="Sample", test_number=3, known_result=sample_output_3)
 
         elif choice == 'b':
             good_model_test(_input=[[1]], test_name="Boundary")
