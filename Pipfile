@@ -5,6 +5,9 @@ name = "pypi"
 
 [packages]
 numpy = "*"
+terminaltables = "*"
+colorama = "*"
+pyreadline = "*"
 
 [dev-packages]
 
